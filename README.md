@@ -1,6 +1,11 @@
 # "HappyLilAccident" 
 A discord bot prototype for the *"Attic Dwellers"* server
 
+##dependencies:
+language - python 3.9
+modules - in dependencies.txt
+to install the modules - pip install -r dependencies.txt
+
 ## Features:
 <ul>
 <li>  </li>

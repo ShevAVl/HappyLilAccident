@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-import re # - regex
+import re  # - regex
 import DB_handler  # - list of functions for interaction with the DB
 
 ##############################################
@@ -9,6 +9,7 @@ import DB_handler  # - list of functions for interaction with the DB
 intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(intents=intents, command_prefix="$")
+#bot.activity = discord.Activity(type=discord.ActivityType.listening, name="$commands")
 
 #####################
 #   event section   #
@@ -37,7 +38,7 @@ async def on_message(message):
                 return
             try:
                 DB_handler.incNum('num_m308')
-                await message.channel.send('Found match \'' + match[0] + '\' in message \'' + message.content + '\'')
+                #await message.channel.send('Found match \'' + match[0] + '\' in message \'' + message.content + '\'')
                 await bot.process_commands(message)
             except BaseException as e:
                 print("Caught an exception " + str(e) + " while searching for m308 mentions")
@@ -47,22 +48,30 @@ async def on_message(message):
 #   command section   #
 #######################
 @bot.command()
+async def commands(ctx):
+    '''
+    $commands - outputs the list of all supported commands
+    '''
+    await ctx.channel.send("*$commands* - list of all commands")
+    await ctx.channel.send("*$info* - bot's self introduction")
+    await ctx.channel.send("*$m308* - schizo index")
+    await ctx.channel.send("*$ctxinfo* - bedug command for msg ctx info")
+@bot.command()
 async def ctxinfo(ctx):
     '''
     $ctxinfo - debug command to output all the info about the msg context
     '''
-    await ctx.send(ctx.guild)
-    await ctx.send(ctx.author)
-    await ctx.send(ctx.message.id)
-    await ctx.send(ctx.channel.name)
-
+    print('ctxinfo invoked')
+    await ctx.channel.send(ctx.guild)
+    await ctx.channel.send(ctx.author)
+    await ctx.channel.send(ctx.message.id)
+    await ctx.channel.send(ctx.channel.name)
 @bot.command()
 async def info(ctx):
     '''
     $info - bot's self introduction
     '''
-    await ctx.send('Hi. I\'m a happy little accident made in place of tons of other, curricular activities')
-
+    await ctx.channel.send('Hi. I\'m a happy little accident made in place of tons of other, curricular activities')
 @bot.command()
 async def m308(ctx):
     '''
@@ -70,9 +79,60 @@ async def m308(ctx):
     public channels and threads
     '''
     try:
-        await ctx.channel.send('cz has mentioned m308 ' + str(DB_handler.getValue('num_m308')) + ' times')
+        m308_num = DB_handler.getValue('num_m308')
+        if int(m308_num) == 1:
+            m308_num = m308_num + " time"
+        else:
+            m308_num = m308_num + " times"
+        await ctx.channel.send('cz has mentioned m308 ' + m308_num)
     except BaseException as e:
         print("Caught an exception " + str(e) + "while executing command $m308")
+        user = ctx.guild.fetch_member(DB_handler.getValue('userid_me'))
+        ctx.channel.send(f"{user.mention} go check the logs")
+@bot.command()
+async def voteinfo(ctx):
+    try:
+        await ctx.channel.send('How $vote works:')
+        description = "To start a vote, you need to specify a topic and **1** or **more** options.\n"
+        description += "The topic and each option can be passed in one of *2* ways:\n"
+        description += "\t if a parameter as a single word, just separate it from other parameters with spaces, no quotes needed\n"
+        description += "\t if a parameter has multiple words, incase it in quotes \" \"\n"
+        description += "**Example:**\n"
+        description += "> $vote \"Are you here?\" Yes No\n"
+        await ctx.channel.send(description)
+    except BaseException as e:
+        user = ctx.guild.fetch_member(DB_handler.getValue('userid_me'))
+        ctx.channel.send(f"{user.mention} go check the logs")
+@bot.command()
+async def vote(ctx, *args):
+    try:
+        if len(args) == 0:
+            response = "topic, options - where's all that?"
+            await ctx.channel.send(f"{ctx.author.mention}, " + response)
+            return
+        if len(args[0].replace(" ", "")) == 0:
+            response = "can't accept a blank topic"
+            await ctx.channel.send(f"{ctx.author.mention}, " + response)
+            return
+        if len(args) == 1:
+            response = "can't see a single voting option"
+            await ctx.channel.send(f"{ctx.author.mention}, " + response)
+            return
+
+        argsNum = len(args)
+        for i in range(1, argsNum):
+            if len(args[i].replace(" ", "")) == 0:
+                response = f"option #{i} is blank, can't have that"
+                await ctx.channel.send(f"{ctx.author.mention}, " + response)
+                return
+
+        topic = args[0]
+        await ctx.channel.send(f"**{topic}**")
+        for i in range(1, argsNum):
+            await ctx.channel.send(f"> {i}) {args[i]}")
+    except BaseException as e:
+        user = ctx.guild.fetch_member(DB_handler.getValue('userid_me'))
+        ctx.channel.send(f"{user.mention} go check the logs")
 
 #######################
 #   running the bot   #
