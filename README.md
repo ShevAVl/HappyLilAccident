@@ -13,14 +13,14 @@ A discord bot prototype for the *"Attic Dwellers"* server
 
 ## Credits:
 <ul>
-<li> Luqior - the creator </li>
+<li> Liquor - the creator </li>
 <li> P0wderGang3r 
-(github)
+[steam](https://steamcommunity.com/id/P0wderGang3r)
 - general feedback, code reviews and ideas</li>
 <li> cz 
-(steam)
+[steam](https://steamcommunity.com/id/cz731)
 -  goofball, ideas</li>
 <li> !nfern
-(steam)
+[steam](https://steamcommunity.com/id/folwboiard)
 -  server owner, feedback, ideas</li>
 </ul>
