@@ -21,3 +21,8 @@ def incNum(key):
     num = str(num)
     cur.execute(f"UPDATE ServerObjects SET value = '{num}' WHERE key='{key}'")
     conn.commit()
+
+def setValue(key, value):
+    cur = conn.cursor()
+    cur.execute(f"UPDATE ServerObjects SET value='{str(value)}' WHERE key='{key}'")
+    conn.commit()

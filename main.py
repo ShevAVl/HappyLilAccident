@@ -2,14 +2,18 @@ import discord
 from discord.ext import commands
 import re  # - regex
 import DB_handler  # - list of functions for interaction with the DB
+#import HappyLilAccidentClient
 
 ##############################################
 #   initiating base parameters for the bot   #
 ##############################################
 intents = discord.Intents.default()
 intents.message_content = True
+
 bot = commands.Bot(intents=intents, command_prefix="$")
-#bot.activity = discord.Activity(type=discord.ActivityType.listening, name="$commands")
+bot.activity = discord.Activity(type=discord.ActivityType.listening, name="$commands")
+
+#bot = HappyLilAccidentClient(intents=intents, command_prefix="$")
 
 #####################
 #   event section   #
@@ -56,6 +60,8 @@ async def commands(ctx):
     await ctx.channel.send("*$info* - bot's self introduction")
     await ctx.channel.send("*$m308* - schizo index")
     await ctx.channel.send("*$ctxinfo* - bedug command for msg ctx info")
+    await ctx.channel.send("*$vote* - starts a vote with received parameters")
+    await ctx.channel.send("*$voteinfo* - in-depth description of how $vote works")
 @bot.command()
 async def ctxinfo(ctx):
     '''
@@ -88,7 +94,44 @@ async def m308(ctx):
     except BaseException as e:
         print("Caught an exception " + str(e) + "while executing command $m308")
         user = ctx.guild.fetch_member(DB_handler.getValue('userid_me'))
-        ctx.channel.send(f"{user.mention} go check the logs")
+        await ctx.channel.send(f"{user.mention} go check the logs")
+@bot.command()
+async def setm308(ctx, newValue):
+    try:
+        if isAdmin(ctx.author.id):
+            if int(newValue) < 0:
+                raise ValueError
+            DB_handler.setValue('num_m308', newValue)
+            await ctx.channel.send('counter changed')
+        else:
+            await ctx.reply("Insufficient privileges, can't touch that command")
+    except ValueError:
+        await ctx.reply('need a number >= 0')
+    except Exception as e:
+        print("Caught an exception " + str(e) + "while changing m308 index")
+        user = ctx.guild.fetch_member(DB_handler.getValue('userid_me'))
+        await ctx.channel.send(f"{user.mention} go check the logs")
+
+###########################
+#   auxiliary functions   #
+###########################
+
+def isAdmin(userid):
+    try:
+        if str(userid) == DB_handler.getValue('userid_me') or userid == DB_handler.getValue('userid_lost'):
+            print('yep, admin id')
+            return True
+        else:
+            print('no, not an admin id')
+            return False
+    except Exception:
+        print('couldn\'t fetch the ids')
+        return False
+
+@bot.command()
+async def dm(ctx):
+    await ctx.author.send("hi")
+
 @bot.command()
 async def voteinfo(ctx):
     try:
@@ -100,9 +143,9 @@ async def voteinfo(ctx):
         description += "**Example:**\n"
         description += "> $vote \"Are you here?\" Yes No\n"
         await ctx.channel.send(description)
-    except BaseException as e:
+    except Exception as e:
         user = ctx.guild.fetch_member(DB_handler.getValue('userid_me'))
-        ctx.channel.send(f"{user.mention} go check the logs")
+        await ctx.channel.send(f"{user.mention} go check the logs")
 @bot.command()
 async def vote(ctx, *args):
     try:
@@ -132,7 +175,9 @@ async def vote(ctx, *args):
             await ctx.channel.send(f"> {i}) {args[i]}")
     except BaseException as e:
         user = ctx.guild.fetch_member(DB_handler.getValue('userid_me'))
-        ctx.channel.send(f"{user.mention} go check the logs")
+        await ctx.channel.send(f"{user.mention} go check the logs")
+
+
 
 #######################
 #   running the bot   #
