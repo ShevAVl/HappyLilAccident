@@ -20,12 +20,12 @@ to install the modules: pip install -r dependencies.txt
 <ul>
 <li> Liquor - the creator </li>
 <li> P0wderGang3r 
-[steam](https://steamcommunity.com/id/P0wderGang3r)
+[steam](https://steamcommunity.com/id/P0wderGang3r/)
 - general feedback, code reviews and ideas</li>
 <li> cz 
-[steam](https://steamcommunity.com/id/cz731)
+[steam](https://steamcommunity.com/id/cz731/)
 -  goofball, ideas</li>
 <li> !nfern
-[steam](https://steamcommunity.com/id/folwboiard)
+[steam](https://steamcommunity.com/id/folwboiard/)
 -  server owner, feedback, ideas</li>
 </ul>
