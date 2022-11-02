@@ -1,12 +1,9 @@
 import sqlite3
+from auxiliary import getPath
 
-conn = sqlite3.connect(r'CommonData.db')
+conn = sqlite3.connect(getPath(r'../CommonData.db'))
 
-def dump(inp):
-    cur = conn.cursor()
-    cur.execute("SELECT value FROM ServerObjects where key='{}'".format(inp))
-    value = cur.fetchall()
-    print(value)
+'''Set of functions to interact with an sqlite database'''
 
 def getValue(key):
     cur = conn.cursor()

@@ -1,3 +1,10 @@
-CommonData.db
+#100% ignore
 venv
-command_handler.py
+downloaded
+CommonData.db
+.env
+json/privilegedUsers.json
+json/dates.json
+#not ready
+botpy/test.py
+HappyLilAccidentClient.py

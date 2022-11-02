@@ -1,33 +1,33 @@
+import setup
+import re
 import discord
 from discord.ext import commands
-import re  # - regex
-import DB_handler  # - list of functions for interaction with the DB
-#import HappyLilAccidentClient
+import DB_handler
+from pytube import YouTube, exceptions
+from auxiliary import *
+
 
 ##############################################
 #   initiating base parameters for the bot   #
 ##############################################
+
 intents = discord.Intents.default()
 intents.message_content = True
 
 bot = commands.Bot(intents=intents, command_prefix="$")
 bot.activity = discord.Activity(type=discord.ActivityType.listening, name="$commands")
 
-#bot = HappyLilAccidentClient(intents=intents, command_prefix="$")
 
 #####################
 #   event section   #
 #####################
+
 @bot.event
 async def on_ready():
-    '''
-    a signal that is bot is up and ready to accept input
-    '''
     print('Bot \'{0.user}\''.format(bot) + ' is up!')
+@bot.event
 async def on_message(message):
-    '''
-    a general function to process all and any messages (might need a rewamp)
-    '''
+    print('tracin')
     # if a message belongs to the bot - ignore
     if message.author == bot.user:
         await bot.process_commands(message)
@@ -37,53 +37,44 @@ async def on_message(message):
         match = re.search(r'\$?[Mm] ?308', message.content)
         # if found a pattern match
         if match:
+            print('match')
             if match[0][0] == '$':
                 await bot.process_commands(message)
                 return
             try:
                 DB_handler.incNum('num_m308')
-                #await message.channel.send('Found match \'' + match[0] + '\' in message \'' + message.content + '\'')
                 await bot.process_commands(message)
             except BaseException as e:
                 print("Caught an exception " + str(e) + " while searching for m308 mentions")
-        return
+            return
+    await bot.process_commands(message)
+
 
 #######################
 #   command section   #
 #######################
+
 @bot.command()
 async def commands(ctx):
-    '''
-    $commands - outputs the list of all supported commands
-    '''
-    await ctx.channel.send("*$commands* - list of all commands")
-    await ctx.channel.send("*$info* - bot's self introduction")
-    await ctx.channel.send("*$m308* - schizo index")
-    await ctx.channel.send("*$ctxinfo* - bedug command for msg ctx info")
-    await ctx.channel.send("*$vote* - starts a vote with received parameters")
-    await ctx.channel.send("*$voteinfo* - in-depth description of how $vote works")
-@bot.command()
-async def ctxinfo(ctx):
-    '''
-    $ctxinfo - debug command to output all the info about the msg context
-    '''
-    print('ctxinfo invoked')
-    await ctx.channel.send(ctx.guild)
-    await ctx.channel.send(ctx.author)
-    await ctx.channel.send(ctx.message.id)
-    await ctx.channel.send(ctx.channel.name)
-@bot.command()
-async def info(ctx):
-    '''
-    $info - bot's self introduction
-    '''
-    await ctx.channel.send('Hi. I\'m a happy little accident made in place of tons of other, curricular activities')
+    try:
+        print('in commands')
+        commandlist = getjson(r'../json/commandlist.json')
+        for command in commandlist:
+            output = "*" + command[0] + "* - "
+            for i in range(1, len(command)):
+                output += command[i]
+            await ctx.channel.send(output)
+    except IndexError as i:
+        print("\"" + str(i) + "\" - out of bounds while executing command $m308")
+        await nagDev(ctx)
+    except OSError as o:
+        print("\"" + str(o) + "\" - failed to open json while executing command $m308")
+        await nagDev(ctx)
+    except Exception as e:
+        print("\"" + str(e) + "\" - an unknown exception while executing command $m308")
+        await nagDev(ctx)
 @bot.command()
 async def m308(ctx):
-    '''
-    $m308 - tells how many times cz mentioned m308 in all
-    public channels and threads
-    '''
     try:
         m308_num = DB_handler.getValue('num_m308')
         if int(m308_num) == 1:
@@ -91,10 +82,9 @@ async def m308(ctx):
         else:
             m308_num = m308_num + " times"
         await ctx.channel.send('cz has mentioned m308 ' + m308_num)
-    except BaseException as e:
+    except Exception as e:
         print("Caught an exception " + str(e) + "while executing command $m308")
-        user = ctx.guild.fetch_member(DB_handler.getValue('userid_me'))
-        await ctx.channel.send(f"{user.mention} go check the logs")
+        await nagDev(ctx)
 @bot.command()
 async def setm308(ctx, newValue):
     try:
@@ -105,49 +95,32 @@ async def setm308(ctx, newValue):
             await ctx.channel.send('counter changed')
         else:
             await ctx.reply("Insufficient privileges, can't touch that command")
+    except OSError as o:
+        print("Failed opening json file: \"" + str(o) + "\"")
+        await nagDev(ctx)
     except ValueError:
         await ctx.reply('need a number >= 0')
+    '''
     except Exception as e:
-        print("Caught an exception " + str(e) + "while changing m308 index")
-        user = ctx.guild.fetch_member(DB_handler.getValue('userid_me'))
-        await ctx.channel.send(f"{user.mention} go check the logs")
-
-###########################
-#   auxiliary functions   #
-###########################
-
-def isAdmin(userid):
-    try:
-        if str(userid) == DB_handler.getValue('userid_me') or userid == DB_handler.getValue('userid_lost'):
-            print('yep, admin id')
-            return True
-        else:
-            print('no, not an admin id')
-            return False
-    except Exception:
-        print('couldn\'t fetch the ids')
-        return False
-
-@bot.command()
-async def dm(ctx):
-    await ctx.author.send("hi")
-
+        print("Caught an exception: \"" + str(e) + "\" while changing m308 index")
+        await nagDev(ctx)
+    '''
 @bot.command()
 async def voteinfo(ctx):
     try:
         await ctx.channel.send('How $vote works:')
         description = "To start a vote, you need to specify a topic and **1** or **more** options.\n"
-        description += "The topic and each option can be passed in one of *2* ways:\n"
-        description += "\t if a parameter as a single word, just separate it from other parameters with spaces, no quotes needed\n"
+        description += "The topic and each option can be passed in one of **2** ways:\n"
+        description += "\t if a parameter as a single word, separate it from other parameters with spaces\n"
         description += "\t if a parameter has multiple words, incase it in quotes \" \"\n"
         description += "**Example:**\n"
         description += "> $vote \"Are you here?\" Yes No\n"
         await ctx.channel.send(description)
     except Exception as e:
-        user = ctx.guild.fetch_member(DB_handler.getValue('userid_me'))
-        await ctx.channel.send(f"{user.mention} go check the logs")
+        await nagDev(ctx)
 @bot.command()
 async def vote(ctx, *args):
+    print('in vote')
     try:
         if len(args) == 0:
             response = "topic, options - where's all that?"
@@ -173,13 +146,59 @@ async def vote(ctx, *args):
         await ctx.channel.send(f"**{topic}**")
         for i in range(1, argsNum):
             await ctx.channel.send(f"> {i}) {args[i]}")
-    except BaseException as e:
-        user = ctx.guild.fetch_member(DB_handler.getValue('userid_me'))
-        await ctx.channel.send(f"{user.mention} go check the logs")
+    except Exception as e:
+        print('Something went wrong during voting')
+        await nagDev(ctx)
+@bot.command()
+async def tomp4(ctx):
+    if ctx.message.reference is None:
+        await ctx.reply('call the command as a reply to the video')
+        return
+    try:
+        sourceMsg = await ctx.fetch_message(ctx.message.reference.message_id)
+        yt = YouTube(f'{sourceMsg.content}', use_oauth=False, allow_oauth_cache=False)
+    except exceptions.VideoUnavailable as e:
+        await ctx.reply('Video is unavailable')
+        return
+    except re.RegexMatchError as r:
+        ctx.channel.send('No link in the replied message')
+        return
+    except Exception as e:
+        print('Oppsie, got a: \"' + (str(e) + '\"'))
+        await nagDev(ctx)
+        return
 
+    streams = yt.streams.filter(progressive=True)
+    for stream in reversed(streams):
+        if stream.filesize < 8 * 1024 * 1024:
+            try:
+                await ctx.channel.send("Found the video, downloading")
+                title = yt.title
+                path = getPath('../downloaded/')
+                filename = f'{title}.mp4'
+                stream.download(path, filename=filename)
+                await ctx.reply(file=discord.File(path + filename))
+                #os.remove(path + filename)
+                return
+            except FileNotFoundError:
+                print('File not found, explain')
+                await nagDev(ctx)
+                return
+            except exceptions.VideoUnavailable:
+                await ctx.reply('Video is unavailable, cannot download')
+                return
+            except Exception as e:
+                print("*something* went wrong")
+                await nagDev(ctx)
+                return
+    await ctx.reply("No file under 8 Mb found")
+@bot.command()
+async def pdth(ctx):
+    await ctx.channel.send("to be implemented")
 
 
 #######################
 #   running the bot   #
 #######################
-bot.run(DB_handler.getValue('bot_token'))
+
+bot.run(getEnv("BOT_TOKEN"))
