@@ -1,4 +1,4 @@
-# "HappyLilAccident" 
+# "HappyLilAccident" (on hold untill a lobby tracker is done)
 A discord bot prototype for the *"Attic Dwellers"* server
 
 ## dependencies:
