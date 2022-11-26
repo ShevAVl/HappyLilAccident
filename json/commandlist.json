@@ -1,8 +1,0 @@
-[
-    ["$commands", "list of all commands"],
-    ["$m308", "schizo index"],
-    ["$vote", "starts a vote with received parameters"],
-    ["$voteinfo", "in-depth description of how *$vote* works"],
-    ["$tomp4 - ", "an attempt to download an .mp4 based in a yt link in a replied message"],
-    ["$pdth", "unimplemented"]
-]
