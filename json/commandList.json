@@ -1,0 +1,9 @@
+[
+    ["$info", "list of all commands"],
+    ["$m308", "schizo index"],
+    ["$vote", "starts a vote with received options"],
+    ["$voteinfo", "in-depth description of how *$vote* works"],
+    ["$tomp4", "attempts to download an .mp4 based on a yt link in a replied message"],
+    ["$pdth", "outputs a list of vacant public PDTH lobbies"],
+    ["$gen", "rolls [1,100]"]
+]

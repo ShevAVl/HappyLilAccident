@@ -1,0 +1,9 @@
+[
+    "../json/cogs.json", 
+    "../json/commandList.json",
+    "../json/privilegedUsers.json",
+    "../.env",
+    "../CommonData.db",
+    "../PDTracker_dir/PDTracker",
+    "../PDTracker_dir/steam_appid.txt"
+]
