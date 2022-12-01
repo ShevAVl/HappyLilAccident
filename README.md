@@ -19,6 +19,18 @@ To make things work do the following:
   <li>
     remove the "_example" part from CommonData_example.db
   </li>
+  <li>
+    put the included libsteam_api.so file into /usr/lib directory and enter these commands:  
+  </li>
+    <ul>
+      <li>
+        chmod 0755 /usr/lib/libsteam_api.so - to give the lib the necessary privileges
+      </li>
+      <li>
+        ldconfig - updating the lib cache
+      </li>
+    </ul>
+  </li>
 </ul>
 The list of the files required for successful launch is stored in json/essentialFiles (essentialFiles.json itself is also an essential file)   
 Here are brief descriptions of those files:  
