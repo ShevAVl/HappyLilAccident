@@ -41,7 +41,9 @@ Here are brief descriptions of those files:
   <li>
     CommonData.db - includes some  miscellaneous data. Could easily be removed at this point, but it'll get more important farther into the development the bot is
   </li>
+  <li>
     cogs.json - lists currently varified cog-extension for the bot (cog-files store bot's commands and event managers)
+  </li>
   <li>
     commandList.json - a list of currently available bot commands, used to output the list as a part of the "$info" command
   </li>
@@ -49,14 +51,15 @@ Here are brief descriptions of those files:
     privilegedUsers.json - list of IDs of users who're allowed to use certain commands (atm it's only "$setm308") that edit backend data in any way
   </li>
   <li>
-    PDTracker - an executable that connects to a running Steam client and retrievs a list of active PDTH lobbies
+    PDTracker - an executable that connects to a running Steam client and retrieves a list of active PDTH lobbies
   </li>
   <li>
     steam_appid.txt - contains an appID of PDTH (necessary for PDTracker)
   </li>
 </ul>
-Note that some of these files are present in this repo with an "_example* suffix. It means that these files don't contain any valid data and you will have to edit them yourself if you want the corresponding functions to work properly. Nevertheless, if you just remove the "_example" part, the bot will work just fine, although some functions will not do what they are supposed to do.
-_example files:
+Note that some of these files are present in this repo with an "_example* suffix. It means that these files don't contain any valid data and you will have to edit them yourself if you want the corresponding functions to work properly. Nevertheless, if you just remove the "_example" part, the bot will work just fine, although some functions will not do what they are supposed to do.  
+
+**_example files:**
 <ul>
   <li>
     json/privilegedUsers_example.json - has a placeholder userID that doesn't belong to any real user. Without custom editing command "$setm308" will do nothing
